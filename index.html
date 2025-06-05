@@ -16,17 +16,17 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            overflow: hidden;
+            overflow: hidden; /* Prevent body scroll bars */
         }
         canvas {
-            border: 2px solid #cbd5e1;
-            background-color: #ffffff;
-            border-radius: 1rem;
+            border: 2px solid #cbd5e1; /* slate-300 */
+            background-color: #ffffff; /* white */
+            border-radius: 1rem; /* rounded-xl */
             display: block;
             margin: 0 auto;
-            max-width: 100%;
-            height: auto;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 100%; /* Ensure canvas is responsive */
+            height: auto; /* Maintain aspect ratio */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
         }
     </style>
 </head>
@@ -34,10 +34,10 @@
     <div class="flex flex-col items-center p-6 bg-white rounded-2xl shadow-xl border border-gray-100 max-w-lg w-full md:max-w-xl lg:max-w-2xl">
         <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-6 text-center leading-tight">2D Vertical Rotary Parking System</h1>
         <p class="text-gray-600 mb-8 text-center max-w-prose">
-            This 2D model simulates a **vertical rotary parking system** with **6 slots**. Click the button below to see the system rotate, bringing different parking spaces to the ground level.
+            This 2D model simulates a **vertical rotary parking system** with **12 slots**, mimicking a clock-like rotation to bring cars to the ground level.
         </p>
 
-        <canvas id="parkingCanvas" class="w-full h-96"></canvas>
+        <canvas id="parkingCanvas" class="w-full h-[450px] md:h-[550px] lg:h-[650px]"></canvas>
 
         <button id="rotateButton"
                 class="mt-8 px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-in-out
@@ -51,21 +51,20 @@
         const ctx = canvas.getContext('2d');
         const rotateButton = document.getElementById('rotateButton');
 
-        // Configuration for the parking system
-        const numSlots = 6;              // Number of parking slots
-        const slotWidth = 80;            // Width of each parking slot (platform)
-        const slotHeight = 30;           // Height of each parking slot (platform thickness)
-        const slotVerticalSpacing = 60;  // Vertical space between the center of adjacent slots
-        const frameWidth = slotWidth + 40; // Overall width of the vertical frame
-        const carLength = slotWidth * 0.7; // Length of the car inside the slot
-        const carWidth = slotHeight * 0.7; // Width of the car inside the slot
+        // System Configuration
+        const numSlots = 12; // Total number of car-holding platforms in the loop
+        const slotWidth = 70; // Width of each car platform
+        const slotHeight = 25; // Height/thickness of each car platform
+        const carLength = slotWidth * 0.7; // Length of the car visual
+        const carWidth = slotHeight * 0.7; // Width of the car visual
 
-        // Represents the vertical offset of the entire rotating system
-        // This will be adjusted during rotation to simulate movement
-        let rotationOffset = 0; // Current vertical offset for the system (in pixels)
+        const systemHeight = 400; // Total height of the main rotating part
+        const systemWidth = 200;  // Total width of the main rotating part
 
-        // The maximum vertical travel for the entire system before it needs to wrap around
-        const totalSystemHeight = numSlots * slotVerticalSpacing;
+        // Current rotation state (0 means the "bottom" slot is at the very bottom of the loop)
+        // Each increment is one full slot movement, which is 2*PI / numSlots in radians
+        let currentRotationAngle = 0; // Angle for the "top" of the loop, moving clockwise from the left
+                                     // This angle determines the position of all slots
 
         /**
          * Sets the canvas dimensions to match its display size.
@@ -90,20 +89,33 @@
          * @param {number} y - Y coordinate of the car's center.
          * @param {number} length - Length of the car.
          * @param {number} width - Width of the car.
+         * @param {string} color - Optional color for the car.
          */
-        function drawCar(context, x, y, length, width) {
-            context.fillStyle = '#fefefe'; // light gray/off-white for car body
-            context.strokeStyle = '#6b7280'; // gray-500
+        function drawCar(context, x, y, length, width, color = '#fefefe') {
+            context.fillStyle = color;
+            context.strokeStyle = '#6b7280';
             context.lineWidth = 1;
 
-            // Car body
-            context.fillRect(x - length / 2, y - width / 2, length, width);
-            context.strokeRect(x - length / 2, y - width / 2, length, width);
+            // Car body (rounded rectangle)
+            const radius = 5;
+            context.beginPath();
+            context.moveTo(x - length / 2 + radius, y - width / 2);
+            context.lineTo(x + length / 2 - radius, y - width / 2);
+            context.quadraticCurveTo(x + length / 2, y - width / 2, x + length / 2, y - width / 2 + radius);
+            context.lineTo(x + length / 2, y + width / 2 - radius);
+            context.quadraticCurveTo(x + length / 2, y + width / 2, x + length / 2 - radius, y + width / 2);
+            context.lineTo(x - length / 2 + radius, y + width / 2);
+            context.quadraticCurveTo(x - length / 2, y + width / 2, x - length / 2, y + width / 2 - radius);
+            context.lineTo(x - length / 2, y - width / 2 + radius);
+            context.quadraticCurveTo(x - length / 2, y - width / 2, x - length / 2 + radius, y - width / 2);
+            context.closePath();
+            context.fill();
+            context.stroke();
 
-            // Simple windows (top part of the car)
-            context.fillStyle = '#94a3b8'; // slate-400
-            context.fillRect(x - length / 4, y - width / 2 - width * 0.2, length / 2, width * 0.4);
-            context.strokeRect(x - length / 4, y - width / 2 - width * 0.2, length / 2, width * 0.4);
+            // Simple windows (darker rectangle on top)
+            context.fillStyle = '#94a3b8';
+            context.fillRect(x - length * 0.25, y - width / 2 - width * 0.2, length * 0.5, width * 0.4);
+            context.strokeRect(x - length * 0.25, y - width / 2 - width * 0.2, length * 0.5, width * 0.4);
         }
 
         /**
@@ -113,82 +125,117 @@
         function drawParkingSystem() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            const centerX = canvas.width / 2;
-            const groundY = canvas.height - 80; // Fixed ground level position
+            const canvasCenterX = canvas.width / 2;
+            const canvasGroundY = canvas.height - 60; // Fixed ground level position
 
-            // Draw the main vertical frame
-            ctx.strokeStyle = '#4b5563'; // gray-600
-            ctx.lineWidth = 8;
-            ctx.lineCap = 'round'; // Rounded ends for structure
+            // Center of the conceptual "wheel" for the vertical loop
+            const wheelCenterX = canvasCenterX;
+            const wheelCenterY = canvasGroundY - (systemHeight / 2) - slotHeight; // Adjusted to align ground slot properly
+            const wheelRadiusX = systemWidth / 2; // Horizontal radius of the ellipse
+            const wheelRadiusY = systemHeight / 2; // Vertical radius of the ellipse
 
-            // Left vertical beam
+            // --- Draw the main vertical frame ---
+            ctx.strokeStyle = '#374151'; // dark gray
+            ctx.lineWidth = 10;
+            ctx.lineCap = 'round';
+
+            // Vertical beams (main support)
             ctx.beginPath();
-            ctx.moveTo(centerX - frameWidth / 2, groundY);
-            ctx.lineTo(centerX - frameWidth / 2, groundY - totalSystemHeight - 50); // Extend above slots
+            ctx.moveTo(wheelCenterX - wheelRadiusX - 10, canvasGroundY);
+            ctx.lineTo(wheelCenterX - wheelRadiusX - 10, wheelCenterY - wheelRadiusY - 20); // Extends above top
             ctx.stroke();
 
-            // Right vertical beam
             ctx.beginPath();
-            ctx.moveTo(centerX + frameWidth / 2, groundY);
-            ctx.lineTo(centerX + frameWidth / 2, groundY - totalSystemHeight - 50); // Extend above slots
+            ctx.moveTo(wheelCenterX + wheelRadiusX + 10, canvasGroundY);
+            ctx.lineTo(wheelCenterX + wheelRadiusX + 10, wheelCenterY - wheelRadiusY - 20); // Extends above top
             ctx.stroke();
 
-            // Top arch/beam
+            // Top curved arch structure
             ctx.beginPath();
-            ctx.moveTo(centerX - frameWidth / 2, groundY - totalSystemHeight - 50);
-            ctx.lineTo(centerX + frameWidth / 2, groundY - totalSystemHeight - 50);
+            ctx.arc(wheelCenterX, wheelCenterY - wheelRadiusY, wheelRadiusX + 20, Math.PI, 0, false); // Top curve
             ctx.stroke();
 
-            // Draw connecting beams/tracks on the sides
-            ctx.strokeStyle = '#6b7280'; // gray-500
+            // Bottom base structure
+            ctx.fillStyle = '#6b7280'; // gray-500
+            ctx.fillRect(wheelCenterX - wheelRadiusX - 10, canvasGroundY - 20, systemWidth + 20, 20);
+            ctx.strokeRect(wheelCenterX - wheelRadiusX - 10, canvasGroundY - 20, systemWidth + 20, 20);
+
+            // --- Draw the rotating chain mechanism ---
+            ctx.strokeStyle = '#9ca3af'; // light gray for chain
             ctx.lineWidth = 4;
-            const beamOffset = frameWidth / 2 - 10; // Inset the beams slightly
+            ctx.lineCap = 'butt';
+
+            // Path for the chain/track (an ellipse)
+            ctx.beginPath();
+            // Start at the bottom left
+            ctx.ellipse(wheelCenterX, wheelCenterY, wheelRadiusX, wheelRadiusY, 0, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Draw center drive gear/pulley at top
+            ctx.beginPath();
+            ctx.arc(wheelCenterX, wheelCenterY - wheelRadiusY, 20, 0, Math.PI * 2);
+            ctx.fillStyle = '#4b5563'; // dark gray
+            ctx.fill();
+            ctx.stroke();
+
+            // Draw center drive gear/pulley at bottom
+            ctx.beginPath();
+            ctx.arc(wheelCenterX, wheelCenterY + wheelRadiusY, 20, 0, Math.PI * 2);
+            ctx.fillStyle = '#4b5563'; // dark gray
+            ctx.fill();
+            ctx.stroke();
+
+
+            // --- Draw slots and cars ---
+            // Calculate initial angle for first slot to be at the bottom center.
+            // The starting point for rotation is 0 degrees (right side, middle), we want bottom.
+            const initialAngleOffset = -Math.PI / 2; // Offset to start from bottom
+
             for (let i = 0; i < numSlots; i++) {
-                const initialSlotY = groundY - (i * slotVerticalSpacing) - (slotHeight / 2);
-                const currentSlotY = initialSlotY + rotationOffset;
+                // Calculate angle for this slot on the elliptical path
+                // (i / numSlots) * (2 * Math.PI) distributes slots evenly around the circumference
+                const angle = (i / numSlots) * (2 * Math.PI) + currentRotationAngle + initialAngleOffset;
 
-                // Only draw slots that are within the visible frame
-                if (currentSlotY > (groundY - totalSystemHeight - 50) && currentSlotY < (groundY + slotHeight)) {
-                    // Left horizontal connector
-                    ctx.beginPath();
-                    ctx.moveTo(centerX - beamOffset, currentSlotY - slotHeight / 2);
-                    ctx.lineTo(centerX - beamOffset - 15, currentSlotY - slotHeight / 2); // Small extension
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(centerX - beamOffset, currentSlotY + slotHeight / 2);
-                    ctx.lineTo(centerX - beamOffset - 15, currentSlotY + slotHeight / 2);
-                    ctx.stroke();
+                // Calculate X and Y coordinates on the ellipse
+                // For a vertical ellipse, X depends on sin and Y on cos
+                const slotX = wheelCenterX + Math.sin(angle) * wheelRadiusX;
+                const slotY = wheelCenterY + Math.cos(angle) * wheelRadiusY;
 
-                    // Right horizontal connector
-                    ctx.beginPath();
-                    ctx.moveTo(centerX + beamOffset, currentSlotY - slotHeight / 2);
-                    ctx.lineTo(centerX + beamOffset + 15, currentSlotY - slotHeight / 2); // Small extension
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(centerX + beamOffset, currentSlotY + slotHeight / 2);
-                    ctx.lineTo(centerX + beamOffset + 15, currentSlotY + slotHeight / 2);
-                    ctx.stroke();
+                // Define car colors (cycling through some options for variety)
+                const colors = [
+                    '#4f46e5', // indigo
+                    '#ef4444', // red
+                    '#f97316', // orange
+                    '#eab308', // yellow
+                    '#10b981', // emerald
+                    '#06b6d4', // cyan
+                    '#6366f1', // violet
+                    '#a855f7', // purple
+                    '#ec4899', // pink
+                    '#fef08a', // light yellow
+                    '#d1d5db', // light gray
+                    '#ffffff'  // white
+                ];
+                const carColor = colors[i % colors.length];
 
-                    // Draw the parking slot platform
-                    ctx.fillStyle = '#34d399'; // emerald-400 (platform color)
-                    ctx.strokeStyle = '#059669'; // emerald-600
-                    ctx.lineWidth = 2;
-                    ctx.fillRect(centerX - slotWidth / 2, currentSlotY - slotHeight / 2, slotWidth, slotHeight);
-                    ctx.strokeRect(centerX - slotWidth / 2, currentSlotY - slotHeight / 2, slotWidth, slotHeight);
+                // Draw parking slot platform
+                ctx.fillStyle = '#34d399'; // emerald-400 (platform color)
+                ctx.strokeStyle = '#059669'; // emerald-600
+                ctx.lineWidth = 2;
+                ctx.fillRect(slotX - slotWidth / 2, slotY - slotHeight / 2, slotWidth, slotHeight);
+                ctx.strokeRect(slotX - slotWidth / 2, slotY - slotHeight / 2, slotWidth, slotHeight);
 
-                    // Draw a car placeholder inside the slot
-                    drawCar(ctx, centerX, currentSlotY, carLength, carWidth);
-                }
+                // Draw car on the platform
+                drawCar(ctx, slotX, slotY + (slotHeight / 2) - (carWidth / 2), carLength, carWidth, carColor);
             }
-
 
             // --- Draw the Ground Level ---
             ctx.strokeStyle = '#6b7280'; // gray-500
             ctx.lineWidth = 4;
             // Draw the ground line
             ctx.beginPath();
-            ctx.moveTo(centerX - frameWidth * 1.2, groundY);
-            ctx.lineTo(centerX + frameWidth * 1.2, groundY);
+            ctx.moveTo(canvasCenterX - systemWidth * 0.8, canvasGroundY + 20);
+            ctx.lineTo(canvasCenterX + systemWidth * 0.8, canvasGroundY + 20);
             ctx.stroke();
 
             // Draw the ground access platform/ramp
@@ -197,44 +244,30 @@
             ctx.lineWidth = 2;
             const rampWidth = slotWidth + 40;
             const rampHeight = 25;
-            ctx.fillRect(centerX - rampWidth / 2, groundY, rampWidth, rampHeight);
-            ctx.strokeRect(centerX - rampWidth / 2, groundY, rampWidth, rampHeight);
+            ctx.fillRect(canvasCenterX - rampWidth / 2, canvasGroundY + 20, rampWidth, rampHeight);
+            ctx.strokeRect(canvasCenterX - rampWidth / 2, canvasGroundY + 20, rampWidth, rampHeight);
 
             // Text for ground access
             ctx.fillStyle = '#4f46e5'; // indigo-600
             ctx.font = '14px Inter';
             ctx.textAlign = 'center';
-            ctx.textBaseline = 'top'; // Align text to the top of the given y
-            ctx.fillText('Ground Access', centerX, groundY + rampHeight + 5);
-
-            // Indicate the current slot at ground level
-            ctx.fillStyle = '#ef4444'; // red-500
-            ctx.font = '16px Inter';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'bottom';
-            // Find which slot is currently aligned with the ground level
-            // This is a simplified check based on rotationOffset
-            // A more robust check might involve knowing the initial y-position of each slot relative to the ground
-            // For now, let's assume the "bottom" slot of the system is the one at ground level
-            const groundSlotIndex = Math.round((-rotationOffset / slotVerticalSpacing) % numSlots);
-            ctx.fillText(`Current Slot at Ground: ${ (groundSlotIndex + numSlots) % numSlots + 1}`, centerX, groundY - 10);
+            ctx.textBaseline = 'top';
+            ctx.fillText('Ground Access', canvasCenterX, canvasGroundY + rampHeight + 25);
         }
 
         /**
-         * Rotates the parking slots vertically by one position.
+         * Rotates the parking system to bring the next slot to the ground level.
+         * Simulates a "clock-like" rotation.
          */
         function rotateSlots() {
-            // Move the system up by one slot's vertical spacing
-            rotationOffset -= slotVerticalSpacing;
+            // Increment rotation angle by one slot's worth (360 degrees / numSlots)
+            // We rotate counter-clockwise (increasing angle) to move slots up the right, down the left
+            currentRotationAngle += (2 * Math.PI) / numSlots;
 
-            // This ensures the system "wraps around" smoothly
-            // If the offset becomes too negative (system has moved up past its logical end),
-            // reset it to simulate the top slot appearing at the bottom.
-            if (Math.abs(rotationOffset) >= totalSystemHeight) {
-                 rotationOffset = 0; // Reset or adjust based on desired wrap-around
-            }
+            // Keep the angle within 0 to 2*PI for cleaner values if needed
+            currentRotationAngle %= (2 * Math.PI);
 
-            drawParkingSystem(); // Redraw with the new rotation offset
+            drawParkingSystem(); // Redraw with the new rotation
         }
 
         /**
@@ -248,7 +281,6 @@
 
         // Call the initialization function when the window loads
         window.onload = init;
-
     </script>
 </body>
 </html>
