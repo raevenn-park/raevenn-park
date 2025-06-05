@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rotary Parking Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: white;
+      text-align: center;
+    }
+    .wrapper {
+      position: relative;
+      display: inline-block;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+    .slot {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+      border: 2px solid white;
+    }
+    /* Position each slot over your rotary image */
+    .slot1 { top: 20%; left: 48%; }
+    .slot2 { top: 35%; left: 70%; }
+    .slot3 { top: 60%; left: 75%; }
+    .slot4 { top: 80%; left: 55%; }
+    .slot5 { top: 70%; left: 30%; }
+    .slot6 { top: 40%; left: 20%; }
+  </style>
+</head>
+<body>
+  <h1>Rotary Parking System</h1>
+  <div class="wrapper">
+    <img src="https://i.ibb.co/S4qF55Mh/rotary.png" alt="Rotary Parking">
+    <div class="slot slot1"></div>
+    <div class="slot slot2"></div>
+    <div class="slot slot3"></div>
+    <div class="slot slot4"></div>
+    <div class="slot slot5"></div>
+    <div class="slot slot6"></div>
+  </div>
+</body>
+</html>
