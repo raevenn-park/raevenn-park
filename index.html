@@ -1,50 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Rotary Parking Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rotary Parking System</title>
   <style>
-    body {
+    html, body {
       margin: 0;
-      background: #111;
+      padding: 0;
+      background: #000;
       color: white;
-      text-align: center;
+      height: 100%;
+      width: 100%;
     }
+
     .wrapper {
       position: relative;
-      display: inline-block;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
     }
-    img {
-      max-width: 100%;
-      height: auto;
+
+    .wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
+
     .slot {
       position: absolute;
       width: 20px;
       height: 20px;
-      background-color: red;
+    }
+
+    .indicator {
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
+      background: green;
       border: 2px solid white;
     }
-    /* Position each slot over your rotary image */
-    .slot1 { top: 20%; left: 48%; }
-    .slot2 { top: 35%; left: 70%; }
-    .slot3 { top: 60%; left: 75%; }
-    .slot4 { top: 80%; left: 55%; }
-    .slot5 { top: 70%; left: 30%; }
-    .slot6 { top: 40%; left: 20%; }
+
+    .occupied {
+      background: red;
+    }
   </style>
 </head>
 <body>
-  <h1>Rotary Parking System</h1>
   <div class="wrapper">
-    <img src="https://i.ibb.co/S4qF55Mh/rotary.png" alt="Rotary Parking">
-    <div class="slot slot1"></div>
-    <div class="slot slot2"></div>
-    <div class="slot slot3"></div>
-    <div class="slot slot4"></div>
-    <div class="slot slot5"></div>
-    <div class="slot slot6"></div>
+    <img src="https://i.ibb.co/S4qF55Mh/a809cfcb-a1a2-4ffb-9c14-6e79c4be0b13.png" alt="Rotary Parking" />
+
+    <!-- Slot Indicators: Add your slots here -->
+    <div class="slot" style="top: 20%; left: 48%;">
+      <div class="indicator occupied"></div>
+    </div>
+
+    <div class="slot" style="top: 38%; left: 65%;">
+      <div class="indicator"></div>
+    </div>
+
+    <div class="slot" style="top: 65%; left: 65%;">
+      <div class="indicator occupied"></div>
+    </div>
+
+    <div class="slot" style="top: 80%; left: 48%;">
+      <div class="indicator"></div>
+    </div>
+
+    <div class="slot" style="top: 65%; left: 30%;">
+      <div class="indicator"></div>
+    </div>
+
+    <div class="slot" style="top: 38%; left: 30%;">
+      <div class="indicator occupied"></div>
+    </div>
   </div>
 </body>
 </html>
