@@ -11,37 +11,33 @@
       background: #fff;
       color: black;
       height: 100%;
-      width: 100%;
       font-family: sans-serif;
     }
 
     .wrapper {
       position: relative;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+      width: 100%;
+      max-width: 500px;
+      margin: 20px auto;
     }
 
     .wrapper img {
-      width: auto;
-      height: 100%;
+      width: 100%;
+      height: auto;
+      display: block;
       object-fit: contain;
       image-rendering: auto;
-      display: block;
     }
 
     .slot {
       position: absolute;
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
     }
 
     .indicator {
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: green;
       border: 2px solid black;
@@ -56,23 +52,23 @@
   <div class="wrapper">
     <img src="https://i.ibb.co/S4qF55Mh/a809cfcb-a1a2-4ffb-9c14-6e79c4be0b13.png" alt="Rotary Parking" />
 
-    <!-- Example Slot Positions (adjust as needed) -->
-    <div class="slot" style="top: 20%; left: 48%;">
+    <!-- Indicators positioned relative to smaller image -->
+    <div class="slot" style="top: 13%; left: 47%;">
       <div class="indicator occupied"></div>
     </div>
-    <div class="slot" style="top: 38%; left: 65%;">
+    <div class="slot" style="top: 27%; left: 68%;">
       <div class="indicator"></div>
     </div>
-    <div class="slot" style="top: 65%; left: 65%;">
+    <div class="slot" style="top: 54%; left: 68%;">
       <div class="indicator occupied"></div>
     </div>
-    <div class="slot" style="top: 80%; left: 48%;">
+    <div class="slot" style="top: 67%; left: 47%;">
       <div class="indicator"></div>
     </div>
-    <div class="slot" style="top: 65%; left: 30%;">
+    <div class="slot" style="top: 54%; left: 27%;">
       <div class="indicator"></div>
     </div>
-    <div class="slot" style="top: 38%; left: 30%;">
+    <div class="slot" style="top: 27%; left: 27%;">
       <div class="indicator occupied"></div>
     </div>
   </div>
