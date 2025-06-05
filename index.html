@@ -1,57 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Rotary Parking System</title>
   <style>
     body {
-      background: white;
       margin: 0;
+      background: white;
       font-family: sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: start;
       height: 100vh;
-      padding-top: 2rem;
+      padding-top: 30px;
     }
 
-    .rotary-container {
+    .carousel-container {
       position: relative;
       width: 300px;
       height: 300px;
       border-radius: 50%;
-      border: 4px solid #444;
-      margin-bottom: 2rem;
+      border: 3px solid #555;
+      overflow: visible;
+      margin-bottom: 20px;
+    }
+
+    .carousel {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transform: rotate(0deg);
       transition: transform 1s ease-in-out;
     }
 
     .slot {
-      position: absolute;
       width: 60px;
       height: 30px;
       background-color: #4caf50;
-      border: 2px solid #000;
-      border-radius: 5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       color: white;
+      text-align: center;
+      line-height: 30px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -15px 0 0 -30px;
+      transform-origin: 0 -130px;
+      border-radius: 6px;
       font-weight: bold;
     }
 
     .occupied {
-      background-color: #f44336 !important;
+      background-color: #f44336;
     }
-
-    /* Position 6 slots around a circle */
-    .slot:nth-child(1) { top: 0; left: 50%; transform: translate(-50%, 0); }
-    .slot:nth-child(2) { top: 25%; left: 90%; transform: translate(-50%, -50%); }
-    .slot:nth-child(3) { top: 75%; left: 90%; transform: translate(-50%, -50%); }
-    .slot:nth-child(4) { bottom: 0; left: 50%; transform: translate(-50%, 0); }
-    .slot:nth-child(5) { top: 75%; left: 10%; transform: translate(-50%, -50%); }
-    .slot:nth-child(6) { top: 25%; left: 10%; transform: translate(-50%, -50%); }
 
     button {
       padding: 10px 20px;
@@ -59,28 +60,49 @@
       cursor: pointer;
       border-radius: 8px;
       border: none;
-      background-color: #2196f3;
+      background-color: #1976d2;
       color: white;
+      transition: background 0.3s;
     }
+
+    button:hover {
+      background-color: #0d47a1;
+    }
+
   </style>
 </head>
 <body>
-  <div id="rotary" class="rotary-container">
-    <div class="slot">1</div>
-    <div class="slot occupied">2</div>
-    <div class="slot">3</div>
-    <div class="slot occupied">4</div>
-    <div class="slot">5</div>
-    <div class="slot">6</div>
+
+  <div class="carousel-container">
+    <div class="carousel" id="carousel">
+      <div class="slot occupied">1</div>
+      <div class="slot">2</div>
+      <div class="slot occupied">3</div>
+      <div class="slot">4</div>
+      <div class="slot">5</div>
+      <div class="slot">6</div>
+    </div>
   </div>
+
   <button onclick="rotateCarousel()">Rotate</button>
 
   <script>
-    let currentRotation = 0;
+    const carousel = document.getElementById('carousel');
+    const slots = carousel.getElementsByClassName('slot');
+    let angle = 0;
+    const totalSlots = slots.length;
+
+    // Position each slot in circular layout
+    for (let i = 0; i < totalSlots; i++) {
+      const slotAngle = (360 / totalSlots) * i;
+      slots[i].style.transform = `rotate(${slotAngle}deg) translateY(-130px) rotate(-${slotAngle}deg)`;
+    }
+
     function rotateCarousel() {
-      currentRotation += 60; // 360 / 6 slots
-      document.getElementById('rotary').style.transform = `rotate(${currentRotation}deg)`;
+      angle += 60;
+      carousel.style.transform = `rotate(${angle}deg)`;
     }
   </script>
+
 </body>
 </html>
