@@ -6,67 +6,80 @@
   <title>Rotary Parking System</title>
   <style>
     body {
-      background-color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
+      background: white;
       margin: 0;
-      padding: 0;
-    }
-
-    h1 {
-      margin-top: 20px;
-      color: #333;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      padding-top: 2rem;
     }
 
     .rotary-container {
       position: relative;
       width: 300px;
       height: 300px;
-      margin: 20px auto;
-    }
-
-    .rotary {
-      width: 100%;
-      height: 100%;
-      background: url('https://i.ibb.co/S4qF55Mh/your-uploaded-image.png') no-repeat center/contain;
+      border-radius: 50%;
+      border: 4px solid #444;
+      margin-bottom: 2rem;
       transition: transform 1s ease-in-out;
     }
 
-    .rotate-button {
+    .slot {
+      position: absolute;
+      width: 60px;
+      height: 30px;
+      background-color: #4caf50;
+      border: 2px solid #000;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    .occupied {
+      background-color: #f44336 !important;
+    }
+
+    /* Position 6 slots around a circle */
+    .slot:nth-child(1) { top: 0; left: 50%; transform: translate(-50%, 0); }
+    .slot:nth-child(2) { top: 25%; left: 90%; transform: translate(-50%, -50%); }
+    .slot:nth-child(3) { top: 75%; left: 90%; transform: translate(-50%, -50%); }
+    .slot:nth-child(4) { bottom: 0; left: 50%; transform: translate(-50%, 0); }
+    .slot:nth-child(5) { top: 75%; left: 10%; transform: translate(-50%, -50%); }
+    .slot:nth-child(6) { top: 25%; left: 10%; transform: translate(-50%, -50%); }
+
+    button {
       padding: 10px 20px;
       font-size: 16px;
       cursor: pointer;
-      background-color: #3498db;
-      color: white;
+      border-radius: 8px;
       border: none;
-      border-radius: 5px;
-      margin-top: 10px;
-    }
-
-    .indicator {
-      margin-top: 10px;
-      font-weight: bold;
-      color: #555;
+      background-color: #2196f3;
+      color: white;
     }
   </style>
 </head>
 <body>
-  <h1>Rotary Parking System</h1>
-  <div class="rotary-container">
-    <div class="rotary" id="rotary"></div>
+  <div id="rotary" class="rotary-container">
+    <div class="slot">1</div>
+    <div class="slot occupied">2</div>
+    <div class="slot">3</div>
+    <div class="slot occupied">4</div>
+    <div class="slot">5</div>
+    <div class="slot">6</div>
   </div>
-  <button class="rotate-button" onclick="rotateCarousel()">Rotate</button>
-  <div class="indicator">Active Slot: <span id="slot">1</span>/6</div>
+  <button onclick="rotateCarousel()">Rotate</button>
 
   <script>
-    let angle = 0;
-    let slot = 1;
-
+    let currentRotation = 0;
     function rotateCarousel() {
-      angle += 60; // 360 / 6 = 60 degrees per slot
-      slot = slot % 6 + 1;
-      document.getElementById('rotary').style.transform = `rotate(${angle}deg)`;
-      document.getElementById('slot').textContent = slot;
+      currentRotation += 60; // 360 / 6 slots
+      document.getElementById('rotary').style.transform = `rotate(${currentRotation}deg)`;
     }
   </script>
 </body>
