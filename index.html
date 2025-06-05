@@ -8,23 +8,28 @@
     html, body {
       margin: 0;
       padding: 0;
-      background: #000;
-      color: white;
+      background: #fff;
+      color: black;
       height: 100%;
       width: 100%;
+      font-family: sans-serif;
     }
 
     .wrapper {
       position: relative;
       width: 100vw;
       height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
     }
 
     .wrapper img {
-      width: 100%;
+      width: auto;
       height: 100%;
       object-fit: contain;
+      image-rendering: auto;
       display: block;
     }
 
@@ -39,7 +44,7 @@
       height: 20px;
       border-radius: 50%;
       background: green;
-      border: 2px solid white;
+      border: 2px solid black;
     }
 
     .occupied {
@@ -51,27 +56,22 @@
   <div class="wrapper">
     <img src="https://i.ibb.co/S4qF55Mh/a809cfcb-a1a2-4ffb-9c14-6e79c4be0b13.png" alt="Rotary Parking" />
 
-    <!-- Slot Indicators: Add your slots here -->
+    <!-- Example Slot Positions (adjust as needed) -->
     <div class="slot" style="top: 20%; left: 48%;">
       <div class="indicator occupied"></div>
     </div>
-
     <div class="slot" style="top: 38%; left: 65%;">
       <div class="indicator"></div>
     </div>
-
     <div class="slot" style="top: 65%; left: 65%;">
       <div class="indicator occupied"></div>
     </div>
-
     <div class="slot" style="top: 80%; left: 48%;">
       <div class="indicator"></div>
     </div>
-
     <div class="slot" style="top: 65%; left: 30%;">
       <div class="indicator"></div>
     </div>
-
     <div class="slot" style="top: 38%; left: 30%;">
       <div class="indicator occupied"></div>
     </div>
